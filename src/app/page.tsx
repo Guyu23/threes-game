@@ -1,7 +1,7 @@
-'use client'
-import Block from '@/components/block'
-import { useState, useEffect, useRef } from 'react'
-import { v4 as uuid } from 'uuid'
+"use client";
+import Block from "@/components/block";
+import { useState, useEffect, useRef } from "react";
+import { v4 as uuid } from "uuid";
 import {
   DIRECTION_MAP,
   CAN_COMBINE,
@@ -10,41 +10,41 @@ import {
   direction_map,
   LoseGame,
   celebrate,
-} from '@/util/constants'
-import GameFunction from '@/components/gameFunction'
-import Footer from '@/components/footer'
+} from "@/util/constants";
+import GameFunction from "@/components/gameFunction";
+import Footer from "@/components/footer";
 
 // 不要和数组做强绑定，应该是自由的块儿
 // 没有二维数组，直接就是块儿
 
 export default function Home() {
   // 地图
-  const board = Array.from({ length: 4 }, () => Array.from({ length: 4 }))
+  const board = Array.from({ length: 4 }, () => Array.from({ length: 4 }));
   // 方块
-  const [blockList, setBlockList] = useState<BlockList>([])
+  const [blockList, setBlockList] = useState<BlockList>([]);
   /**
    * 生成方块
    */
-  const optionalBlock = useRef([1, 2, 3])
-  const blockListRef = useRef<BlockList>(blockList)
-  let gameStatus = useRef<'playing' | 'end'>('playing')
-  let maxBlock = useRef(6)
-  let historyList = useRef<number[]>([0, 0, 0])
-  let score = useRef(0)
-  let randomBlock = useRef<number>(0)
+  const optionalBlock = useRef([1, 2, 3]);
+  const blockListRef = useRef<BlockList>(blockList);
+  let gameStatus = useRef<"playing" | "end">("playing");
+  let maxBlock = useRef(6);
+  let historyList = useRef<number[]>([0, 0, 0]);
+  let score = useRef(0);
+  let randomBlock = useRef<number>(0);
 
   function startGame() {
-    const newBlockList = []
-      const coordinateSet = new Set()
-      maxBlock.current = 6
-    gameStatus.current = 'playing'
+    const newBlockList = [];
+    const coordinateSet = new Set();
+    maxBlock.current = 6;
+    gameStatus.current = "playing";
     for (let i = 0; i < 6; i++) {
-      const length = optionalBlock.current.length
-      let newBlock
+      const length = optionalBlock.current.length;
+      let newBlock;
 
       do {
-        let x = Math.floor(Math.random() * 4)
-        let y = Math.floor(Math.random() * 4)
+        let x = Math.floor(Math.random() * 4);
+        let y = Math.floor(Math.random() * 4);
         newBlock = {
           num: optionalBlock.current[Math.floor(Math.random() * length)],
           id: uuid(),
@@ -54,90 +54,90 @@ export default function Home() {
           showUp: true,
           showScore: false,
           zIndex: 1,
-        }
-      } while (coordinateSet.has(`${newBlock.x},${newBlock.y}`))
+        };
+      } while (coordinateSet.has(`${newBlock.x},${newBlock.y}`));
 
-      coordinateSet.add(`${newBlock.x},${newBlock.y}`)
-      newBlockList.push(newBlock)
+      coordinateSet.add(`${newBlock.x},${newBlock.y}`);
+      newBlockList.push(newBlock);
     }
     randomBlock.current =
       optionalBlock.current[
         Math.floor(Math.random() * optionalBlock.current.length)
-      ]
-    setBlockList(newBlockList)
+      ];
+    setBlockList(newBlockList);
   }
 
   function generateRandomPosition(direction: string, blockList: BlockList) {
-    const d = direction_map[direction]
-    const move_prop = d[1] as 'x' | 'y'
-    const static_prop = d[3]
+    const d = direction_map[direction];
+    const move_prop = d[1] as "x" | "y";
+    const static_prop = d[3];
     const positionList = Array.from({ length: 4 }, (_, i) => {
-      return move_prop === 'x' ? [i, static_prop] : [static_prop, i]
+      return move_prop === "x" ? [i, static_prop] : [static_prop, i];
     }).filter(
       (item) =>
         !blockList.some((block) => block.x === item[0] && block.y === item[1]),
-    )
-    return positionList[Math.floor(Math.random() * positionList.length)]
+    );
+    return positionList[Math.floor(Math.random() * positionList.length)];
   }
 
   function handleMove(e: KeyboardEvent) {
-    e.stopPropagation()
-    e.preventDefault()
-    handleKeyDown(e, moveBlock)
+    e.stopPropagation();
+    e.preventDefault();
+    handleKeyDown(e, moveBlock);
   }
 
   function moveBlock(direction: string) {
     // 做法一：遍历整个地图
-    const d = DIRECTION_MAP[direction]
-    let hasMoved = false
-    let x = d.i[0]
-    const blockList = [...blockListRef.current]
-    blockList.forEach((block) => (block.slideIn = ''))
-    const x_limite = d.i[1]
-    const minus = d.minus
-    const reverse = d.reverse
+    const d = DIRECTION_MAP[direction];
+    let hasMoved = false;
+    let x = d.i[0];
+    const blockList = [...blockListRef.current];
+    blockList.forEach((block) => (block.slideIn = ""));
+    const x_limite = d.i[1];
+    const minus = d.minus;
+    const reverse = d.reverse;
     for (; minus ? x > x_limite : x < x_limite; x += minus ? -1 : 1) {
       for (let y = 0; y < 4; y++) {
-        const currentX = reverse ? x : y
-        const currentY = reverse ? y : x
-        const nextX = reverse ? currentX + (minus ? 1 : -1) : currentX
-        const nextY = reverse ? currentY : currentY + (minus ? 1 : -1)
+        const currentX = reverse ? x : y;
+        const currentY = reverse ? y : x;
+        const nextX = reverse ? currentX + (minus ? 1 : -1) : currentX;
+        const nextY = reverse ? currentY : currentY + (minus ? 1 : -1);
         const block = blockList.find(
           (block) => block.x === currentX && block.y === currentY,
-        )
+        );
         if (!block) {
-          continue
+          continue;
         }
-        block.max = false
+        block.max = false;
         const nextBlock = blockList.find(
           (block) => block.x === nextX && block.y === nextY,
-        )
+        );
         if (nextBlock) {
           if (CAN_COMBINE(block.num, nextBlock.num)) {
-            block.id = uuid()
-            block.num += nextBlock.num
-            block.x = nextX
-            block.y = nextY
-            block.showUp = true
-            block.zIndex = 2
-            blockList.splice(blockList.indexOf(nextBlock), 1)
-            nextBlock.zIndex = 1
-            hasMoved = true
+            block.id = uuid();
+            block.num += nextBlock.num;
+            block.x = nextX;
+            block.y = nextY;
+            block.showUp = true;
+            block.zIndex = 2;
+            blockList.splice(blockList.indexOf(nextBlock), 1);
+            nextBlock.zIndex = 1;
+            hasMoved = true;
           }
         } else if (nextX >= 0 && nextX < 4 && nextY >= 0 && nextY < 4) {
-          hasMoved = true
-          block.x = nextX
-          block.y = nextY
+          hasMoved = true;
+          block.x = nextX;
+          block.y = nextY;
         }
         if (block.num >= maxBlock.current) {
-          maxBlock.current = block.num
-          block.max = true
+          maxBlock.current = block.num;
+          block.max = true;
         }
       }
     }
     // 没有移动过说明此方向无法移动
-    if (!hasMoved) return
-    const newBlock = generateRandomPosition(direction, blockList)
+    if (!hasMoved) return;
+    const newBlock = generateRandomPosition(direction, blockList);
     blockList.push({
       num: randomBlock.current,
       id: uuid(),
@@ -148,37 +148,45 @@ export default function Home() {
       max: false,
       zIndex: 1,
       slideIn: direction,
-    })
-    setBlockList(blockList)
-    randomBlock.current =
-      optionalBlock.current[
-        Math.floor(Math.random() * optionalBlock.current.length)
-      ]
+    });
+    setBlockList(blockList);
+    const tooMuchOne = blockList.filter((item) => item.num === 1).length > 3;
+    const tooMuchTwo = blockList.filter((item) => item.num === 2).length > 3;
+    if (tooMuchOne) {
+      randomBlock.current = 2;
+    } else if (tooMuchTwo) {
+      randomBlock.current = 1;
+    } else {
+      randomBlock.current =
+        optionalBlock.current[
+          Math.floor(Math.random() * optionalBlock.current.length)
+        ];
+    }
   }
 
   function showResult() {
-    const endList = [...blockListRef.current]
+    const endList = [...blockListRef.current];
     endList.forEach((block) => {
-      block.showScore = true
-    })
-    celebrate()
-    setBlockList(endList)
+      block.showScore = true;
+    });
+    celebrate();
+    setBlockList(endList);
   }
 
   useEffect(() => {
-    startGame()
-  }, [])
+    startGame();
+  }, []);
 
   useEffect(() => {
-    window.removeEventListener('keyup', handleMove)
-    window.addEventListener('keydown', handleMove)
-  }, [])
+    window.removeEventListener("keyup", handleMove);
+    window.addEventListener("keydown", handleMove);
+  }, []);
 
   useEffect(() => {
-    blockListRef.current = blockList
+    blockListRef.current = blockList;
     if (
       blockListRef.current.length === 16 &&
-      gameStatus.current === 'playing'
+      gameStatus.current === "playing"
     ) {
       if (LoseGame(blockListRef.current)) {
         score.current = blockListRef.current.reduce(
@@ -188,23 +196,23 @@ export default function Home() {
               ? Math.pow(3, Math.log2(current.num / 3))
               : current.num),
           0,
-        )
-        gameStatus.current = 'end'
-        let minHistory:number | undefined = historyList.current.find(
-          (item) => item === 0
-        )
-          if (!minHistory) { 
-            minHistory = Math.min(...historyList.current)
-          }
+        );
+        gameStatus.current = "end";
+        let minHistory: number | undefined = historyList.current.find(
+          (item) => item === 0,
+        );
+        if (!minHistory) {
+          minHistory = Math.min(...historyList.current);
+        }
         if (minHistory || minHistory === 0) {
           historyList.current[historyList.current.indexOf(minHistory)] =
-            score.current
+            score.current;
         }
 
-        showResult()
+        showResult();
       }
     }
-  }, [blockList])
+  }, [blockList]);
 
   return (
     <main className="flex flex-col gap-6 relative">
@@ -225,12 +233,12 @@ export default function Home() {
         <br />
         <div className="shadow-lg text-white bg-[#F16780] w-4 h-6 rounded inline-block text-center">
           1
-        </div>{' '}
-        ➕{' '}
+        </div>{" "}
+        ➕{" "}
         <div className=" text-white shadow-lg bg-[#72CAF2] w-4 h-6 rounded inline-block text-center">
           2
-        </div>{' '}
-        🟰{' '}
+        </div>{" "}
+        🟰{" "}
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
           3
         </div>
@@ -238,25 +246,25 @@ export default function Home() {
         <br />
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
           3
-        </div>{' '}
-        ➕{' '}
+        </div>{" "}
+        ➕{" "}
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
           3
-        </div>{' '}
-        🟰{' '}
+        </div>{" "}
+        🟰{" "}
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
           6
         </div>
         <br />
         <br />
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
-          6{' '}
-        </div>{' '}
-        ➕{' '}
+          6{" "}
+        </div>{" "}
+        ➕{" "}
         <div className="text-black bg-white shadow-lg w-4 h-6 rounded inline-block text-center">
           6
-        </div>{' '}
-        🟰{' '}
+        </div>{" "}
+        🟰{" "}
         <div className="text-black bg-white shadow-lg w-6 h-6 rounded inline-block text-center">
           12
         </div>
@@ -301,5 +309,5 @@ export default function Home() {
       </div>
       {/* <Footer /> */}
     </main>
-  )
+  );
 }
