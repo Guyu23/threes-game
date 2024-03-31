@@ -1,0 +1,105 @@
+.styleBlock {
+    width: calc((450px - 5rem) / 4);
+    height: calc((600px - 5rem) / 4 - 0.5rem);
+    border-radius: 0.75rem;
+    transition: all 0.3s ease;
+    font-family: 'cartoon';
+}
+
+.styleBlock.showUp {
+    animation: showUp 0.3s ease-in-out;
+}
+
+.styleBlock.up {
+    top: calc(-100% - 0.75rem);
+}
+
+.styleBlock.down {
+    top: calc(100% + 0.75rem);
+}
+
+.styleBlock.left {
+    left: calc(-100% - 0.25rem);
+}
+
+.styleBlock.right {
+    left: calc(100% + 0.25rem);
+}
+
+.slide-left {
+    animation: slide-left 0.3s ease-in-out;
+}
+
+.slide-right {
+    animation: slide-right 0.3s ease-in-out;
+}
+
+.slide-up {
+    animation: slide-up 0.3s ease-in-out;
+}
+
+.slide-down {
+    animation: slide-down 0.3s ease-in-out;
+}
+
+@keyframes showUp {
+    0% {
+        opacity: 0.5;
+        scale: 0.5;
+    }
+
+    50% {
+        opacity: 0.8;
+        scale: 1.1;
+    }
+
+    75% {
+        opacity: 1;
+        scale: 0.9;
+    }
+
+    100% {
+        opacity: 1;
+        scale: 1;
+    }
+}
+
+@keyframes slide-left {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-right {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+@keyframes slide-up {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-down {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
